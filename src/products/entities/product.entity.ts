@@ -45,7 +45,7 @@ export class Product {
   @BeforeInsert()
   checkSlugInsert() {
     if (!this.slug) {
-      this.slug = this.slug = this.title.toLowerCase().replace(/ /g, '-');
+      this.slug = this.title.toLowerCase().replace(/ /g, '-');
     }
     this.slug = this.slug.toLowerCase().replace(/ /g, '-').replaceAll(' ', '-');
   }

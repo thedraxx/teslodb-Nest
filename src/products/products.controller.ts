@@ -8,9 +8,11 @@ import {
   Delete,
   ParseUUIDPipe,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 // import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
@@ -24,16 +26,16 @@ export class ProductsController {
 
   // TODO:Paginar
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.productsService.findAll(paginationDto);
   }
 
-  @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const product = await this.productsService.findOne(id);
+  @Get(':term')
+  async findOne(@Param('term') term: any) {
+    const product = await this.productsService.findOne(term);
 
     if (!product) {
-      throw new NotFoundException(`Product #${id} not found`);
+      throw new NotFoundException(`Product #${term} not found`);
     }
     return product;
   }

@@ -3,9 +3,10 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
-// import { UpdateProductDto } from './dto/update-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -62,9 +63,21 @@ export class ProductsService {
     return product;
   }
 
-  // update(id: number, updateProductDto: UpdateProductDto) {
-  //   return `This action updates a #${id} product`;
-  // }
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    const product = await this.productRepository.preload({
+      id: id,
+      ...updateProductDto,
+    });
+    if (!product) {
+      throw new NotFoundException(`Product #${id} not found`);
+    }
+
+    try {
+      return await this.productRepository.save(product);
+    } catch (error) {
+      this.handleDBException(error);
+    }
+  }
 
   async remove(id: string) {
     try {
